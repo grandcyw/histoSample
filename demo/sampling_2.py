@@ -1,5 +1,7 @@
 import random
 from typing import List, Tuple
+import openslide
+from find_best_level_1 import find_best_level
 
 def grid_sampling(dims: Tuple[int, int], patch_size: int, stride: int) -> List[Tuple[int, int]]:
     """Grid sampling strategy"""
@@ -32,10 +34,15 @@ def tissue_sampling(slide, dims: Tuple[int, int], patch_size: int, n_patches: in
             coords.append((x, y))
     return coords
 
+
 # Example usage
+wsi_path = "demo/706a5789a3517393a583829512a1fb8d.tiff"
 slide = openslide.OpenSlide(wsi_path)
+best_level, best_mpp, best_dims = find_best_level(wsi_path)
 sampling_strategy = "grid"  # or "random" or "tissue"
 patch_size = 256
+
+coords = []
 
 if sampling_strategy == "grid":
     coords = grid_sampling(best_dims, patch_size, stride=256)
@@ -43,3 +50,10 @@ elif sampling_strategy == "random":
     coords = random_sampling(best_dims, patch_size, n_patches=100)
 elif sampling_strategy == "tissue":
     coords = tissue_sampling(slide, best_dims, patch_size, n_patches=100)
+
+print(f"Sampling strategy: {sampling_strategy}")
+print(f"Number of patches sampled: {len(coords)}")
+# for coord in coords:
+#     print(f"Patch coordinates: {coord}")
+print("Sampled patch coordinates:", coords[:5])  # Print first 5 for brevity
+slide.close()

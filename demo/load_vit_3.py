@@ -5,7 +5,7 @@ import torch
 import os
 
 # assert "HF_TOKEN" in os.environ, "Please set the HF_TOKEN environment variable to your Hugging Face API token"
-os.environ["HF_TOKEN"] = "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"
+
 
 tile_encoder = timm.create_model("hf_hub:prov-gigapath/prov-gigapath", pretrained=False) 
 # print(tile_encoder)

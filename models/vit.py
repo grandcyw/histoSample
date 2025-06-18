@@ -3,8 +3,8 @@ from torchvision import transforms
 from transformers import ViTModel, ViTConfig
 
 # Load pretrained ViT
-vit_config = ViTConfig.from_pretrained("google/vit-base-patch16-224")
-vit_model = ViTModel.from_pretrained("google/vit-base-patch16-224")
+vit_config = ViTConfig.from_pretrained("saved_weights/config.json")
+vit_model = ViTModel.from_pretrained("saved_weights/config.json")
 vit_model.eval()
 
 # Preprocessing

@@ -15,6 +15,9 @@ class WSIDataset(Dataset):
     def __init__(self, wsi_path, mask_path, patch_size=256, level=0):
         self.wsi = openslide.OpenSlide(wsi_path)
         self.mask = openslide.OpenSlide(mask_path)
+        self.mask.level_count = self.mask.level_count
+        print(f"mask level count: {self.mask.level_count}")
+        raise RuntimeError("mask level count: {self.mask.level_count}")
         self.patch_size = patch_size
         self.level = level
         self.wsi_width, self.wsi_height = self.wsi.level_dimensions[level]

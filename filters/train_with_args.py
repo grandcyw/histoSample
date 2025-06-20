@@ -2,6 +2,7 @@ import argparse
 import torch
 import torch.nn as nn
 from torchvision import models
+from train import create_loader, validate
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Gleason Grading Segmentation Training')
@@ -82,11 +83,14 @@ def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
     # 1. 准备数据
-    dataset = SegmentationDataset(args.image_dir, args.mask_dir)
-    train_data, val_data = train_test_split(dataset, test_size=0.2, random_state=42)
+    # dataset = SegmentationDataset(args.image_dir, args.mask_dir)
+    # train_data, val_data = train_test_split(dataset, test_size=0.2, random_state=42)
     
-    train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True)
-    val_loader = DataLoader(val_data, batch_size=args.batch_size, shuffle=False)
+    # train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True)
+    # val_loader = DataLoader(val_data, batch_size=args.batch_size, shuffle=False)
+
+    train_loader, val_loader, test_loader = create_loader(data_dir="data/wsi/train", mask_dir="data/wsi/labels", patch_size=256, level=2, batch_size=4, shuffle=True)
+
     
     # 2. 初始化模型
     model = get_model(args).to(device)

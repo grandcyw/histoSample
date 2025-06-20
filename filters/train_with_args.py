@@ -1,10 +1,3 @@
-/opt/miniconda3/envs/histoSample/bin/python /data1/wcy/histologySampling/filters/ln.py
-先软链采样1000张wsi
-
-
-以下是一个完整的 `argparse` 实现，支持选择不同模型架构（UNet、SimpleCNN、DenseNet121）进行 Gleason 分级分割训练，并使用 `BCELoss` 作为损失函数：
-
-```python
 import argparse
 import torch
 import torch.nn as nn
@@ -148,46 +141,3 @@ def validate(model, val_loader, criterion, device):
 
 if __name__ == '__main__':
     main()
-```
-
-### 使用说明：
-
-1. **训练UNet模型**：
-```bash
-python train.py --model unet --image-dir data/images --mask-dir data/masks --epochs 100 --save-best
-```
-
-2. **训练SimpleCNN模型**：
-```bash
-python train.py --model simplecnn --image-dir data/images --mask-dir data/masks --batch-size 16
-```
-
-3. **训练DenseNet121模型**：
-```bash
-python train.py --model densenet121 --image-dir data/images --mask-dir data/masks --lr 1e-5
-```
-
-### 关键功能说明：
-
-1. **模型选择**：
-   - `--model`: 支持三种架构选择
-   - UNet：标准分割网络
-   - SimpleCNN：轻量级CNN
-   - DenseNet121：预训练的编码器结构
-
-2. **Gleason分级适配**：
-   - `--num-classes 6` 对应Gleason 1-6级
-   - 所有模型输出层使用Sigmoid激活（多分类可改为Softmax）
-
-3. **训练控制**：
-   - 自动保存验证集表现最好的模型
-   - 支持学习率、批次大小等超参数调整
-
-4. **数据流**：
-   - 自动处理图像和mask的配对
-   - 支持RGB图像和单通道mask
-
-对于多分类任务，只需：
-1. 将 `--num-classes` 设为实际类别数
-2. 将 `BCELoss` 改为 `CrossEntropyLoss`
-3. 移除输出层的Sigmoid激活（或改为Softmax）

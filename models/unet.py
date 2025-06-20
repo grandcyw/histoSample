@@ -1,3 +1,7 @@
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
 class DoubleConv(nn.Module):
     def __init__(self, in_channels, out_channels):
         super().__init__()
@@ -55,4 +59,4 @@ class UNet(nn.Module):
         x = self.final_conv(x)
         return torch.sigmoid(x)
 
-model = UNet()
+# model = UNet()

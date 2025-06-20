@@ -10,6 +10,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import transforms
 
+
+
 # 加载WSI和对应的标注（假设标注是二值化的PNG mask）
 class WSIDataset(Dataset):
     def __init__(self, wsi_path, mask_path, patch_size=256, level=0):
@@ -94,7 +96,7 @@ class WSIDataset(Dataset):
 if __name__ == "__main__":
     wsi_path = "demo/706a5789a3517393a583829512a1fb8d.tiff"
     mask_path = "demo/706a5789a3517393a583829512a1fb8d_mask.tiff"
-    level = 0  # 使用WSI的最高分辨率层级
+    level = 2  # 使用WSI的最高分辨率层级
     dataset = WSIDataset(wsi_path, mask_path, patch_size=256, level=level)
     print(f"Dataset size: {len(dataset)} patches")
     for level_i in range(dataset.level_count):

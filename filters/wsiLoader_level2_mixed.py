@@ -9,6 +9,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import transforms
+import logging
+
+# 设置日志记录
+logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 
@@ -16,10 +20,10 @@ from torchvision import transforms
 class WSIDataset(Dataset):
     def __init__(self, wsi_path, mask_path, patch_size=256, level=0):
         self.wsi = openslide.OpenSlide(wsi_path)
-        print(mask_path)
+        logging.info(mask_path)
         self.mask = openslide.OpenSlide(mask_path)
         self.level_count = self.mask.level_count
-        # print(f"mask level count: {self.mask.level_count}")
+        # logging.info(f"mask level count: {self.mask.level_count}")
         # raise RuntimeError("mask level count: {self.mask.level_count}")
         self.patch_size = patch_size
         self.level = level
@@ -43,17 +47,17 @@ class WSIDataset(Dataset):
         mask_x = int(x * (self.mask_width / self.wsi_width))
         mask_y = int(y * (self.mask_height / self.wsi_height))
 
-        print(f"Extracting patch at WSI coordinates ({x}, {y}) and mask coordinates ({mask_x}, {mask_y})")
-        print(f"Patch size: {self.patch_size}, Mask size: {self.wsi_width}x{self.wsi_height}")
+        logging.info(f"Extracting patch at WSI coordinates ({x}, {y}) and mask coordinates ({mask_x}, {mask_y})")
+        logging.info(f"Patch size: {self.patch_size}, Mask size: {self.wsi_width}x{self.wsi_height}")
         mask_patch = self.mask.read_region((mask_x, mask_y), 0, (self.patch_size, self.patch_size))
 
         # 转为灰度图并二值化
         # [i,0,0] i=1,2,3,4,5,6六分类
         mask_patch = np.array(mask_patch)[..., :1]  # 只取0通道
 
-            # print("inspect mask[:5] values:", mask_patch[:5])  # 检查mask的前5个值
+            # logging.info("inspect mask[:5] values:", mask_patch[:5])  # 检查mask的前5个值
             # if np.sum(mask_patch)>256*256:  # 检查mask的总和
-            #     # print(np.unique(mask_patch))  # 检查mask中唯一值
+            #     # logging.info(np.unique(mask_patch))  # 检查mask中唯一值
             #     break
             # else:
             #     idx += 1  # 如果mask为空，继续下一个patch
@@ -99,18 +103,18 @@ class WSIDataset(Dataset):
 #     mask_path = "demo/706a5789a3517393a583829512a1fb8d_mask.tiff"
 #     level = 2  # 使用WSI的最高分辨率层级
 #     dataset = WSIDataset(wsi_path, mask_path, patch_size=256, level=level)
-#     print(f"Dataset size: {len(dataset)} patches")
+#     logging.info(f"Dataset size: {len(dataset)} patches")
 #     for level_i in range(dataset.level_count):
-#         print(f"Level {level_i} WSI dimensions: {dataset.wsi.level_dimensions[level_i]}")
-#         print(f"Level {level_i} Mask dimensions: {dataset.mask.level_dimensions[level_i]}")
-#     print(f"WSI dimensions: {dataset.wsi.level_dimensions[level]}")
-#     print(f"Mask dimensions: {dataset.mask.level_dimensions[level]}")
+#         logging.info(f"Level {level_i} WSI dimensions: {dataset.wsi.level_dimensions[level_i]}")
+#         logging.info(f"Level {level_i} Mask dimensions: {dataset.mask.level_dimensions[level_i]}")
+#     logging.info(f"WSI dimensions: {dataset.wsi.level_dimensions[level]}")
+#     logging.info(f"Mask dimensions: {dataset.mask.level_dimensions[level]}")
 #     dataloader = DataLoader(dataset, batch_size=4, shuffle=True)
 #     for i, (patches, masks) in enumerate(dataloader):
 #         if patches is None or masks is None:
 #             continue
-#         print(f"Batch {i+1}:")
-#         print(f"Patches shape: {patches.shape}, Masks shape: {masks.shape}")
+#         logging.info(f"Batch {i+1}:")
+#         logging.info(f"Patches shape: {patches.shape}, Masks shape: {masks.shape}")
 #         # if i == 0:  # 只可视化第一个batch
 #         dataset.visualize(i)
 #         if i>5:
@@ -149,8 +153,8 @@ class WSIDataset(Dataset):
 #         train_val_files, test_size=val_ratio/(1-test_ratio), random_state=42
 #     )
     
-#     print(f"Total WSIs: {len(wsi_files)}")
-#     print(f"Train: {len(train_files)}, Val: {len(val_files)}, Test: {len(test_files)}")
+#     logging.info(f"Total WSIs: {len(wsi_files)}")
+#     logging.info(f"Train: {len(train_files)}, Val: {len(val_files)}, Test: {len(test_files)}")
     
 #     # Create datasets
 #     train_dataset = WSIDataset.from_file_list(
@@ -184,15 +188,15 @@ class WSIDataset(Dataset):
 #     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     
 #     # Example usage
-#     print("\nTraining samples:")
+#     logging.info("\nTraining samples:")
 #     for i, (patches, masks) in enumerate(train_loader):
-#         print(f"Train Batch {i+1}: Patches {patches.shape}, Masks {masks.shape}")
+#         logging.info(f"Train Batch {i+1}: Patches {patches.shape}, Masks {masks.shape}")
 #         if i > 2:  # Just show a few batches
 #             break
     
-#     print("\nValidation samples:")
+#     logging.info("\nValidation samples:")
 #     for i, (patches, masks) in enumerate(val_loader):
-#         print(f"Val Batch {i+1}: Patches {patches.shape}, Masks {masks.shape}")
+#         logging.info(f"Val Batch {i+1}: Patches {patches.shape}, Masks {masks.shape}")
 #         if i > 2:
 #             break
 
@@ -229,8 +233,8 @@ from sklearn.model_selection import train_test_split
 #         train_val_files, test_size=val_ratio/(1-test_ratio), random_state=42
 #     )
     
-#     print(f"Total WSIs: {len(wsi_files)}")
-#     print(f"Train: {len(train_files)}, Val: {len(val_files)}, Test: {len(test_files)}")
+#     logging.info(f"Total WSIs: {len(wsi_files)}")
+#     logging.info(f"Train: {len(train_files)}, Val: {len(val_files)}, Test: {len(test_files)}")
     
 #     # Create datasets by initializing WSIDataset for each file
 #     train_datasets = [
@@ -274,7 +278,7 @@ def create_datasets(data_dir, mask_dir, patch_size=256, level=2, val_ratio=0.1, 
             if os.path.exists(mask_path):
                 valid_pairs.append(f)
             else:
-                print(f"Warning: Mask not found for {f}, skipping...")
+                logging.info(f"Warning: Mask not found for {f}, skipping...")
     
     if not valid_pairs:
         raise ValueError("No valid WSI-mask pairs found in the directories")
@@ -289,9 +293,9 @@ def create_datasets(data_dir, mask_dir, patch_size=256, level=2, val_ratio=0.1, 
         train_val_files, test_size=val_ratio/(1-test_ratio), random_state=42
     )
     
-    print(f"\nDataset Summary:")
-    print(f"Found {len(valid_pairs)} valid WSI-mask pairs")
-    print(f"Train: {len(train_files)}, Val: {len(val_files)}, Test: {len(test_files)}")
+    logging.info(f"\nDataset Summary:")
+    logging.info(f"Found {len(valid_pairs)} valid WSI-mask pairs")
+    logging.info(f"Train: {len(train_files)}, Val: {len(val_files)}, Test: {len(test_files)}")
     
     def create_dataset_safe(file_list):
         datasets = []
@@ -302,10 +306,10 @@ def create_datasets(data_dir, mask_dir, patch_size=256, level=2, val_ratio=0.1, 
                 
                 # Additional verification
                 if not os.path.exists(wsi_path):
-                    print(f"Warning: WSI file {wsi_path} not found, skipping")
+                    logging.info(f"Warning: WSI file {wsi_path} not found, skipping")
                     continue
                 if not os.path.exists(mask_path):
-                    print(f"Warning: Mask file {mask_path} not found, skipping")
+                    logging.info(f"Warning: Mask file {mask_path} not found, skipping")
                     continue
                 
                 dataset = WSIDataset(
@@ -318,9 +322,9 @@ def create_datasets(data_dir, mask_dir, patch_size=256, level=2, val_ratio=0.1, 
                 if len(dataset) > 0:
                     datasets.append(dataset)
                 else:
-                    print(f"Warning: No valid patches found in {f}, skipping")
+                    logging.info(f"Warning: No valid patches found in {f}, skipping")
             except Exception as e:
-                print(f"Error loading {f}: {str(e)}, skipping")
+                logging.info(f"Error loading {f}: {str(e)}, skipping")
                 continue
         return datasets
     
@@ -351,12 +355,12 @@ if __name__ == "__main__":
     # 2. Combine them using torch.utils.data.ConcatDataset
     
     # Option 1: Process each WSI dataset separately
-    print("\nProcessing train datasets:")
+    logging.info("\nProcessing train datasets:")
     for i, dataset in enumerate(train_datasets[:3]):  # Just show first 3 for demo
         loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
-        print(f"\nTraining on WSI {i+1}/{len(train_datasets)}")
+        logging.info(f"\nTraining on WSI {i+1}/{len(train_datasets)}")
         for batch_idx, (patches, masks) in enumerate(loader):
-            print(f"Batch {batch_idx+1}: Patches {patches.shape}, Masks {masks.shape}")
+            logging.info(f"Batch {batch_idx+1}: Patches {patches.shape}, Masks {masks.shape}")
             if batch_idx > 2:  # Just show 3 batches per WSI
                 break
     
@@ -370,8 +374,8 @@ if __name__ == "__main__":
     val_loader = DataLoader(combined_val, batch_size=batch_size, shuffle=False)
     test_loader = DataLoader(combined_test, batch_size=batch_size, shuffle=False)
     
-    print("\nTraining on combined dataset:")
+    logging.info("\nTraining on combined dataset:")
     for i, (patches, masks) in enumerate(train_loader):
-        print(f"Batch {i+1}: Patches {patches.shape}, Masks {masks.shape}")
+        logging.info(f"Batch {i+1}: Patches {patches.shape}, Masks {masks.shape}")
         if i > 2:  # Just show 3 batches
             break

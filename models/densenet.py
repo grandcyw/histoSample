@@ -38,5 +38,5 @@ def train_model(features, labels, model_class):
     return model
 
 # Example usage
-labels = torch.randint(0, 2, (len(coords),))  # Replace with real labels
-densenet_model = train_model(features, labels, DenseNetClassifier)
+# labels = torch.randint(0, 2, (len(coords),))  # Replace with real labels
+# densenet_model = train_model(features, labels, DenseNetClassifier)

@@ -9,9 +9,9 @@ from PIL import Image
 from torch.utils.data import Dataset
 
 
-from wsiLoader_level2_mixed import WSIDataset,create_datasets
+from filters.wsiLoader_level2_mixed import WSIDataset,create_datasets
 from models.simplecnn import SimpleCNN
-from models.densenet import DenseNet121
+from models.densenet import DenseNetClassifier
 from models.unet import UNet
 
 # from models.resnet import ResNet50
@@ -75,9 +75,9 @@ class GleasonGradeCriterion(nn.Module):
 def create_loader(data_dir = "data/wsi/train", mask_dir = "data/wsi/labels", patch_size=256,level=2,batch_size=4, shuffle=True):
     # data_dir = "data/wsi/train"
     # mask_dir = "data/wsi/labels"
-    patch_size = 256
-    level = 2
-    batch_size = 4
+    # patch_size = 256
+    # level = 2
+    # batch_size = 4
     
     # Create datasets with 80% train, 10% val, 10% test split
     train_datasets, val_datasets, test_datasets = create_datasets(
